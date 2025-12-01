@@ -1,36 +1,109 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package view;
 
-/**
- *
- * @author Owner
- */
+import controller.AdminController;
+import model.Dosen;
+import model.Mahasiswa;
+import model.MataKuliah;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.JOptionPane;
+
+
 public class ManajemenData extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(ManajemenData.class.getName());
-
-    /**
-     * Creates new form ManajemenData
-     */
+    private AdminController controller;
+    private String currentNim = "", currentNidn = "", currentKodeMk = "";
+    
     public ManajemenData() {
         initComponents();
+        controller = new AdminController();
+        this.setLocationRelativeTo(null);
+        
+        cmbMhsFakultas.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Ilmu Komputer", "Ekonomi", "Teknik", "Kesehatan" }));
+        cmbMhsProdi.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Teknik Informatika", "Sistem Informasi", "DKV", "Manajemen" }));
+        cmbDsnProgramStudi.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Teknik Informatika", "Sistem Informasi", "DKV", "Manajemen" }));
+        
+        loadDataMahasiswa(); loadDataDosen(); loadDataMatkul();
+        resetFormMahasiswa(); resetFormDosen(); resetFormMatkul();
+        setupTableListeners();
     }
-
+    
+    private void loadDataMahasiswa() {
+        DefaultTableModel model = (DefaultTableModel) tblDataMahasiswa.getModel();
+        model.setRowCount(0);
+        for (Mahasiswa m : controller.getAllMahasiswa()) {
+            model.addRow(new Object[]{ m.getNim(), m.getNama(), m.getFakultas(), m.getProgramStudi(), m.getEmail(), m.getNoHandphone() });
+        }
+    }
+    
+    private void setupTableListeners() {
+        tblDataMahasiswa.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                int row = tblDataMahasiswa.getSelectedRow();
+                if (row != -1) {
+                    currentNim = tblDataMahasiswa.getValueAt(row, 0).toString();
+                    txtMhsNim.setText(currentNim);
+                    txtMhsNama.setText(tblDataMahasiswa.getValueAt(row, 1).toString());
+                    cmbMhsFakultas.setSelectedItem(tblDataMahasiswa.getValueAt(row, 2).toString());
+                    cmbMhsProdi.setSelectedItem(tblDataMahasiswa.getValueAt(row, 3).toString());
+                    txtMhsEmail.setText(tblDataMahasiswa.getValueAt(row, 4).toString());
+                    txtMhsNoHandphone.setText(tblDataMahasiswa.getValueAt(row, 5).toString());
+                    
+                    txtMhsStatusMode.setText("UPDATE");
+                    txtMhsNim.setEditable(false);
+                }
+            }
+        });
+        
+        tblDataDosen.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                int row = tblDataDosen.getSelectedRow();
+                if (row != -1) {
+                    currentNidn = tblDataDosen.getValueAt(row, 0).toString();
+                    txtDsnNidn.setText(currentNidn);
+                    txtDsnNama.setText(tblDataDosen.getValueAt(row, 1).toString());
+                    txtDsnEmail.setText(tblDataDosen.getValueAt(row, 2).toString());
+                    cmbDsnProgramStudi.setSelectedItem(tblDataDosen.getValueAt(row, 3).toString());
+                    txtDsnNoHandphone.setText(tblDataDosen.getValueAt(row, 4).toString());
+                    
+                    txtDsnNidn.setEditable(false);
+                }
+            }
+        });
+        
+        tblDataMataKuliah.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                int row = tblDataMataKuliah.getSelectedRow();
+                if (row != -1) {
+                    currentKodeMk = tblDataMataKuliah.getValueAt(row, 0).toString();
+                    txtMKKode.setText(currentKodeMk);
+                    txtMKNama.setText(tblDataMataKuliah.getValueAt(row, 1).toString());
+                    txtMKSKS.setText(tblDataMataKuliah.getValueAt(row, 2).toString());
+                    txtMKSemesterAwal.setText(tblDataMataKuliah.getValueAt(row, 3).toString());
+                    
+                    txtMKKode.setEditable(false);
+                }
+            }
+        });
+    }
+    
+    private void resetFormMahasiswa() {
+        txtMhsNim.setText(""); txtMhsNama.setText(""); txtMhsEmail.setText(""); txtMhsNoHandphone.setText("");
+        txtMhsStatusMode.setText("INSERT"); txtMhsNim.setEditable(true); currentNim = "";
+        tblDataMahasiswa.clearSelection();
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
      * regenerated by the Form Editor.
      */
     @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
     private void initComponents() {
 
         jPanel4 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
+        kembali = new javax.swing.JButton();
         jTabbedPane3 = new javax.swing.JTabbedPane();
         jPanel2 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
@@ -147,8 +220,13 @@ public class ManajemenData extends javax.swing.JFrame {
                 .addContainerGap(36, Short.MAX_VALUE))
         );
 
-        jButton1.setText("Kembali");
-        jButton1.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        kembali.setText("Kembali");
+        kembali.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        kembali.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                kembaliActionPerformed(evt);
+            }
+        });
 
         jTabbedPane3.setBackground(new java.awt.Color(255, 255, 255));
 
@@ -598,6 +676,12 @@ public class ManajemenData extends javax.swing.JFrame {
             }
         });
 
+        txtMKSemesterAwal.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtMKSemesterAwalActionPerformed(evt);
+            }
+        });
+
         jLabel20.setText("Dosen Pengampu");
 
         jLabel16.setText("Tambah Atau Update Data :");
@@ -713,7 +797,7 @@ public class ManajemenData extends javax.swing.JFrame {
             .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addGap(20, 20, 20)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(kembali, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTabbedPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 951, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -724,64 +808,106 @@ public class ManajemenData extends javax.swing.JFrame {
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton1)
+                    .addComponent(kembali)
                     .addComponent(jTabbedPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 450, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(0, 17, Short.MAX_VALUE))
         );
 
         pack();
-    }// </editor-fold>//GEN-END:initComponents
+    }// </editor-fold>                        
 
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {                                         
+       if (txtMhsNim.getText().isEmpty()) return;
+        boolean sukses = txtMhsStatusMode.getText().equals("INSERT") ?
+            controller.tambahMahasiswa(txtMhsNim.getText(), txtMhsNama.getText(), cmbMhsProdi.getSelectedItem().toString(), cmbMhsFakultas.getSelectedItem().toString(), txtMhsNoHandphone.getText(), txtMhsEmail.getText(), "") :
+            controller.updateMahasiswa(currentNim, txtMhsNama.getText(), cmbMhsProdi.getSelectedItem().toString(), cmbMhsFakultas.getSelectedItem().toString(), txtMhsNoHandphone.getText(), txtMhsEmail.getText(), "");
+        
+        if(sukses) { loadDataMahasiswa(); resetFormMahasiswa(); JOptionPane.showMessageDialog(this, "Data Mahasiswa Disimpan!"); }
+    }                                        
+
+    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {                                         
+        if(!currentNim.isEmpty() && JOptionPane.showConfirmDialog(this, "Hapus data NIM " + currentNim + "?")==0) {
+            if(controller.hapusMahasiswa(currentNim)) { loadDataMahasiswa(); resetFormMahasiswa(); }
+        }
+    }                                        
+
+    private void loadDataDosen() {
+        DefaultTableModel model = (DefaultTableModel) tblDataDosen.getModel();
+        model.setRowCount(0);
+        for (Dosen d : controller.getAllDosen()) {
+            model.addRow(new Object[]{ d.getNidn(), d.getNama(), d.getEmail(), d.getProgramStudi(), d.getNoHandphone() });
+        }
+    }
+    
+    private void resetFormDosen() {
+        txtDsnNidn.setText(""); txtDsnNama.setText(""); txtDsnEmail.setText(""); txtDsnNoHandphone.setText("");
+        txtDsnNidn.setEditable(true); currentNidn = "";
+        tblDataDosen.clearSelection();
+    }
+    
+    private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {                                          
+        if (txtDsnNidn.getText().isEmpty()) return;
+        boolean sukses = currentNidn.isEmpty() ?
+            controller.tambahDosen(txtDsnNidn.getText(), txtDsnNama.getText(), cmbDsnProgramStudi.getSelectedItem().toString(), txtDsnEmail.getText(), txtDsnNoHandphone.getText()) :
+            controller.updateDosen(currentNidn, txtDsnNama.getText(), cmbDsnProgramStudi.getSelectedItem().toString(), txtDsnEmail.getText(), txtDsnNoHandphone.getText());
+        
+        if(sukses) { loadDataDosen(); resetFormDosen(); JOptionPane.showMessageDialog(this, "Data Dosen Disimpan!"); }
+    }                                         
+
+    private void jButton13ActionPerformed(java.awt.event.ActionEvent evt) {                                          
+        if(!currentNidn.isEmpty() && JOptionPane.showConfirmDialog(this, "Hapus?")==0) {
+            if(controller.hapusDosen(currentNidn)) { loadDataDosen(); resetFormDosen(); }
+        }
+    }                                         
+
+    private void loadDataMatkul() {
+        DefaultTableModel model = (DefaultTableModel) tblDataMataKuliah.getModel();
+        model.setRowCount(0);
+        for (MataKuliah mk : controller.getAllMataKuliah()) {
+            model.addRow(new Object[]{ mk.getKode(), mk.getNama(), mk.getSks(), mk.getSemester() });
+        }
+    }
+    
+    private void resetFormMatkul() {
+        txtMKKode.setText(""); txtMKNama.setText(""); txtMKSKS.setText(""); txtMKSemesterAwal.setText("");
+        txtMKKode.setEditable(true); currentKodeMk = "";
+        tblDataMataKuliah.clearSelection();
+    }
+    
+    private void jButton12ActionPerformed(java.awt.event.ActionEvent evt) {                                          
+        try {
+            int sks = Integer.parseInt(txtMKSKS.getText());
+            int sem = Integer.parseInt(txtMKSemesterAwal.getText());
+            boolean sukses = currentKodeMk.isEmpty() ?
+                controller.tambahMataKuliah(txtMKKode.getText(), txtMKNama.getText(), sks, sem):
+                controller.updateMataKuliah(currentKodeMk, txtMKNama.getText(), sks, sem);
+            
+            if(sukses) { loadDataMatkul(); resetFormMatkul(); JOptionPane.showMessageDialog(this, "Data Matkul Disimpan!"); }
+        } catch(Exception e) { JOptionPane.showMessageDialog(this, "SKS/Semester harus angka!"); }
+  
+    }                                         
+
+    private void kembaliActionPerformed(java.awt.event.ActionEvent evt) {                                        
+        new HomeAdmin().setVisible(true);
+    }                                       
+
+    private void txtMKSemesterAwalActionPerformed(java.awt.event.ActionEvent evt) {                                                  
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton4ActionPerformed
+    }                                                 
 
-    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton7ActionPerformed
+    private void txtMKSKSActionPerformed(java.awt.event.ActionEvent evt) {                                         
 
-    private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton11ActionPerformed
+    }                                        
 
-    private void jButton13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton13ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton13ActionPerformed
 
-    private void jButton12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton12ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton12ActionPerformed
-
-    private void txtMKSKSActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtMKSKSActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtMKSKSActionPerformed
-
-    /**
+/**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
-            logger.log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
 
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new ManajemenData().setVisible(true));
     }
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
+    // Variables declaration - do not modify                     
     private javax.swing.JComboBox<String> cmbDsnProgramStudi;
     private javax.swing.JComboBox<String> cmbJdwlHari;
     private javax.swing.JComboBox<String> cmbJdwlPilihMatkul;
@@ -789,7 +915,6 @@ public class ManajemenData extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> cmbMKDosenPengampu;
     private javax.swing.JComboBox<String> cmbMhsFakultas;
     private javax.swing.JComboBox<String> cmbMhsProdi;
-    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton10;
     private javax.swing.JButton jButton11;
     private javax.swing.JButton jButton12;
@@ -846,6 +971,7 @@ public class ManajemenData extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JTabbedPane jTabbedPane3;
     private javax.swing.JTextField jTextField16;
+    private javax.swing.JButton kembali;
     private javax.swing.JTable tblDataDosen;
     private javax.swing.JTable tblDataJadwal;
     private javax.swing.JTable tblDataMahasiswa;
@@ -874,5 +1000,5 @@ public class ManajemenData extends javax.swing.JFrame {
     private javax.swing.JTextField txtMhsNim;
     private javax.swing.JTextField txtMhsNoHandphone;
     private javax.swing.JTextField txtMhsStatusMode;
-    // End of variables declaration//GEN-END:variables
+    // End of variables declaration                   
 }
