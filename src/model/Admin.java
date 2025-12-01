@@ -1,15 +1,13 @@
-// File: model/Admin.java
 package model;
 
 public class Admin {
-    private int id; // Kolom 'id' di tabel admin
-    private int userId; // FK ke tabel user
+    private int id; 
+    private int userId; 
     private String nama;
     private String email;
 
     public Admin() {}
 
-    // --- Getters and Setters ---
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
     public int getUserId() { return userId; }
