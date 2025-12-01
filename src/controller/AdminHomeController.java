@@ -1,88 +1,72 @@
-// File: controller/AdminHomeController.java
 package controller;
 
-import model.Admin;
-import model.AdminDAO;
-import view.HomeAdmin;
-import view.ManajemenAkses; // Asumsi View Manajemen Akses
-import view.ManajemenData; // Asumsi View Manajemen Data (JTabbedPane)
-import view.LogAktivasi;   // Asumsi View Log Aktivitas
+import model.*;
+import java.util.List;
 
-import javax.swing.JOptionPane;
-
-public class AdminHomeController {
+public class AdminController {
     
-    private final HomeAdmin view;
-    private final AdminDAO adminDAO;
-    private final int adminId; 
-
-    public AdminHomeController(HomeAdmin view, int adminId) {
-        this.view = view;
-        this.adminId = adminId;
-        this.adminDAO = new AdminDAO();
-        
-        loadAdminProfile(); // Muat data profil saat Controller dibuat
-        attachNavigationListeners();
-    }
-
-    /**
-     * Memuat data profil Admin (Nama, Email) dan menampilkannya di View.
-     */
-    public void loadAdminProfile() {
-        
-        // Placeholder/Dummy Admin
-        Admin admin = new Admin();
-        admin.setNama("Admin Utama Sistem");
-        admin.setEmail("admin@universitas.ac.id"); 
-
-        if (admin != null) {
-            view.tampilkanDataProfil(admin);
-        } else {
-            JOptionPane.showMessageDialog(view, 
-                "Gagal memuat data profil Admin.", 
-                "Error Data", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    /**
-     * Memasang Action Listener pada semua tombol navigasi di HomeAdmin.
-     */
-    private void attachNavigationListeners() {
-        // Tombol Manajemen Akses
-        view.getBtnManajemenAkses().addActionListener(e -> navigateToManajemenAkses());
-        
-        // Tombol Manajemen Data
-        view.getBtnManajemenData().addActionListener(e -> navigateToManajemenData());
-        
-        // Tombol Log Aktivasi
-        view.getBtnLogAktivasi().addActionListener(e -> navigateToLogAktivasi());
-        
-        // Tombol Home (Muat ulang profil)
-        view.getBtnHome().addActionListener(e -> loadAdminProfile());
-        
-        // Tombol Logout
-        view.getBtnLogout().addActionListener(e -> handleLogout());
-    }
-
-    // --- Metode Navigasi (Membuka Frame Baru) ---
+    private final AdminDAO dao;
     
-    public void navigateToManajemenAkses() {
-        // new ManajemenAkses(adminId).setVisible(true); // Asumsi View ManajemenAkses menerima ID
+    public AdminController() {
+        this.dao = new AdminDAO();
     }
     
-    public void navigateToManajemenData() {
-        // new ManajemenData(adminId).setVisible(true); // Asumsi View ManajemenData (JTabbedPane) menerima ID
+    public Admin getProfilAdmin(int userId) {
+        return dao.getAdminByUserId(userId);
     }
     
-    public void navigateToLogAktivasi() {
-        // new LogAktivasi(adminId).setVisible(true); // Asumsi View LogAktivasi menerima ID
+    public List<Mahasiswa> getAllMahasiswa() { return dao.getAllMahasiswa(); }
+    
+    public boolean tambahMahasiswa(String nim, String nama, String prodi, String fakultas, String hp, String email, String alamat) {
+        Mahasiswa m = new Mahasiswa();
+        m.setNim(nim); m.setNama(nama); m.setProgramStudi(prodi); m.setFakultas(fakultas);
+        m.setNoHandphone(hp); m.setEmail(email); m.setAlamat(alamat);
+        return dao.insertMahasiswa(m);
     }
     
-    public void handleLogout() {
-        int confirm = JOptionPane.showConfirmDialog(view, "Yakin ingin Logout?", "Konfirmasi", JOptionPane.YES_NO_OPTION);
-        if (confirm == JOptionPane.YES_OPTION) {
-            view.dispose();
-            // new Login().setVisible(true); // Kembali ke halaman Login
-        }
+    public boolean updateMahasiswa(String nimLama, String nama, String prodi, String fakultas, String hp, String email, String alamat) {
+        Mahasiswa m = new Mahasiswa();
+        m.setNama(nama); m.setProgramStudi(prodi); m.setFakultas(fakultas);
+        m.setNoHandphone(hp); m.setEmail(email); m.setAlamat(alamat);
+        return dao.updateMahasiswa(nimLama, m);
     }
+    
+    public boolean hapusMahasiswa(String nim) { return dao.deleteMahasiswa(nim); }
+    
+    public List<Dosen> getAllDosen() { return dao.getAllDosen(); }
+    
+    public boolean tambahDosen(String nidn, String nama, String prodi, String email, String hp) {
+        Dosen d = new Dosen();
+        d.setNidn(nidn); d.setNama(nama); d.setProgramStudi(prodi); d.setEmail(email); d.setNoHandphone(hp);
+        return dao.insertDosen(d);
+    }
+    
+    public boolean updateDosen(String nidnLama, String nama, String prodi, String email, String hp) {
+        Dosen d = new Dosen();
+        d.setNama(nama); d.setProgramStudi(prodi); d.setEmail(email); d.setNoHandphone(hp);
+        return dao.updateDosen(nidnLama, d);
+    }
+    
+    public boolean hapusDosen(String nidn) { return dao.deleteDosen(nidn); }
+    
+    public List<MataKuliah> getAllMataKuliah() { return dao.getAllMataKuliah(); }
+    
+    public boolean tambahMataKuliah(String kode, String nama, int sks, int semester) {
+        MataKuliah mk = new MataKuliah();
+        mk.setKode(kode); mk.setNama(nama); mk.setSks(sks); mk.setSemester(semester);
+        return dao.insertMataKuliah(mk);
+    }
+    
+    public boolean updateMataKuliah(String kodeLama, String nama, int sks, int semester) {
+        MataKuliah mk = new MataKuliah();
+        mk.setNama(nama); mk.setSks(sks); mk.setSemester(semester);
+        return dao.updateMataKuliah(kodeLama, mk);
+    }
+    
+    public boolean hapusMataKuliah(String kode) { return dao.deleteMataKuliah(kode); }
+    
+    public List<User> getAllUsers() { return dao.getAllUsers(); }
+    public boolean tambahUser(String u, String p, String r) { return dao.insertUserManual(u, p, r); }
+    public boolean hapusUser(String username) { return dao.deleteUser(username); }
+    public List<LogTagihanView> getLogTagihan() { return dao.getLogTagihan(); }
 }
